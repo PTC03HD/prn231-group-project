@@ -14,12 +14,12 @@ namespace Repositories.Impl
             var config = new MapperConfiguration(cfg => cfg.CreateMap<EmployeeReq, Employee>().ReverseMap());
             var mapper = new Mapper(config);
             Employee employeeReal = mapper.Map<Employee>(employee);
-            var count = EmployeeDAO.CountEmployeeInCompany();
-            var employeeCode = Helper.UserHelper.GeneratedEmployeeCode(count);
+            // var count = EmployeeDAO.CountEmployeeInCompany();
+            var employeeCode = Helper.UserHelper.GenerateEmployeeCode($"{employee.FirstName} {employee.LastName}", EmployeeDAO.GetEmployeeCode());
             employeeReal.EmployeeCode = employeeCode;
             employeeReal.IsFirstLogin = true;
             employeeReal.CreatedDate = DateTime.Now;
-            employeeReal.EmployeeName = employee.LastName + " " + employee.FirstName;
+            employeeReal.EmployeeName = $"{employee.FirstName} {employee.LastName}";
             var password = Helper.UserHelper.GeneratedEmployeePassword(employeeReal.EmployeeName.ToLower(), employee.Dob);
             var employeeEmail = Helper.UserHelper.GeneratedEmployeeEmail(employeeReal.EmployeeName.ToLower());
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(password);

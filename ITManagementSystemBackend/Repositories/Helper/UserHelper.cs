@@ -5,26 +5,54 @@ namespace Repositories.Helper
 {
     public class UserHelper
     {
-        public static string GeneratedEmployeeCode(int count)
+        //public static string GeneratedEmployeeCode(int count)
+        //{
+        //    count++;
+
+        //    var check = count.ToString().Length;
+        //    if (check == 1)
+        //    {
+        //        return "SD000" + count;
+        //    }
+        //    else if (check == 2)
+        //    {
+        //        return "SD00" + count;
+        //    }
+        //    else if (check == 3)
+        //    {
+        //        return "SD0" + count;
+        //    }
+        //    return "SD" + count;
+        //}
+
+
+        public static string GenerateEmployeeCode(string fullName, List<string> existingCodes)
         {
-            count++;
+            var nameParts = fullName.Trim().Split(' ');
+            if (nameParts.Length < 2) return null;
 
+            string firstName = nameParts[0];
+            string middleName = string.Join("", nameParts.Skip(1).Take(nameParts.Length - 2)).Substring(0, 1);
+            string lastNameInitial = nameParts.Last().Substring(0, 1).ToUpper();
 
-            var check = count.ToString().Length;
-            if (check == 1)
-            {
-                return "SD000" + count;
-            }
-            else if (check == 2)
-            {
-                return "SD00" + count;
-            }
-            else if (check == 3)
-            {
-                return "SD0" + count;
-            }
-            return "SD" + count;
+            string employeeCode = firstName + middleName + lastNameInitial;
+
+            existingCodes = existingCodes.Where(x => x.StartsWith(employeeCode)).ToList();
+
+            int maxNumber = existingCodes
+                            .Select(x => x.Substring(employeeCode.Length))
+                            .Where(x => int.TryParse(x, out _))
+                            .Select(int.Parse)
+                            .DefaultIfEmpty(0)
+                            .Max();
+
+            string newCode = $"{employeeCode}{maxNumber + 1}";
+
+            existingCodes.Add(newCode);
+            return newCode;
         }
+
+
         public static string GeneratedEmployeePassword(string fullName, DateTime dob)
         {
             List<string> words = fullName.Split(' ').ToList();
