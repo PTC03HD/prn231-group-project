@@ -6,29 +6,22 @@ namespace DataAccess
 {
     public class EmployeeDAO
     {
-        private static MyDbContext context = new MyDbContext();
-
-        public EmployeeDAO(MyDbContext _context)
-        {
-            context = _context;
-        }
-
         public static void CreateEmployee(Employee employee)
         {
-
+            var context = new MyDbContext();
             context.Users.Add(employee);
             context.SaveChanges();
         }
 
         public static Employee FindEmployeeByEmail(string email)
         {
-
+            var context = new MyDbContext();
             return context.Users.Where(c => c.Email.ToLower().Equals(email.ToLower())).FirstOrDefault();
         }
 
         public static int CountEmployeeInCompany()
         {
-
+            var context = new MyDbContext();
             var countEmployee = context.Users.Count();
             string patternNumber = @"\d+";
             if (countEmployee == 0)
@@ -43,11 +36,13 @@ namespace DataAccess
 
         public static List<string> GetEmployeeCode()
         {
+			var context = new MyDbContext();
             return context.Users.Select(x => x.EmployeeCode).ToList();
         }
 
         public static List<Employee> GetAllEmployeeInCompany()
         {
+            var context = new MyDbContext();
             return context.Users
                 .Include(u => u.Contracts)
                 .ThenInclude(c => c.Position)
@@ -60,6 +55,7 @@ namespace DataAccess
 
         public static int CountEmailSameName(string email)
         {
+            var context = new MyDbContext();
             var count = context.Users.Where(x => x.Email.Contains(email)).ToList();
             string pattern = @"[A-Za-z]";
             string patternNumber = @"\d+";
@@ -92,12 +88,14 @@ namespace DataAccess
 
         public static void UpdateEmployee(Employee employee)
         {
+            var context = new MyDbContext();
             context.Entry(employee).State = EntityState.Modified;
             context.SaveChanges();
         }
 
         public static Employee FindEmployeeById(int id)
         {
+            var context = new MyDbContext();
             return context.Users!
                     .Include(u => u.Contracts)
                     .ThenInclude(c => c.Position)
@@ -111,12 +109,14 @@ namespace DataAccess
 
         public static void DeleteEmployee(Employee employee)
         {
+            var context = new MyDbContext();
             context.Users.Remove(employee);
             context.SaveChanges();
         }
 
         public static Employee Login(string email, string password)
         {
+            var context = new MyDbContext();
             var employee = context.Users.Where(c => c.Email.ToLower().Equals(email.ToLower())).FirstOrDefault();
             if (employee == null) return null;
             if (!BCrypt.Net.BCrypt.Verify(password, employee.Password)) return null;
@@ -125,6 +125,7 @@ namespace DataAccess
 
         public static bool FindEmployeeByCCCD(string cccd)
         {
+            var context = new MyDbContext();
             var empl = context.Users.FirstOrDefault(x => x.CCCD.Equals(cccd));
             return empl != null;
         }
